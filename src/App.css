@@ -1,0 +1,355 @@
+/* --- LIGHT TABLE: palette & type --- */
+:root {
+  --bg: #17140f;
+  --surface: #201a12;
+  --surface-2: #2a2216;
+  --ink: #f3ede0;
+  --muted: #a89a80;
+  --accent: #f2a33f;
+  --accent-ink: #1c1206;
+  --line: #3c3120;
+  --danger: #e2664f;
+}
+
+/* --- RESET & BASE SETUP --- */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: "Archivo", -apple-system, "Segoe UI", sans-serif;
+}
+
+img {
+  width: 100%;
+  height: auto;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  object-fit: contain;
+}
+
+/* --- TOOLBAR --- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface), var(--bg));
+}
+
+.wordmark {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  margin: 0;
+  white-space: nowrap;
+}
+.wordmark .accent {
+  color: var(--accent);
+}
+
+.filebtn {
+  font-family: "Fragment Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 7px;
+  padding: 9px 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.filebtn:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+.filebtn:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Visually hidden but still reachable by keyboard/screen reader (no display:none) */
+.filebtn input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.btnrow {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn {
+  font-family: "Fragment Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 7px;
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn:hover {
+  border-color: var(--accent);
+}
+.btn.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.btn.primary:hover {
+  filter: brightness(1.08);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.btn:disabled:hover {
+  border-color: var(--line);
+}
+
+/* --- BODY: page on the left, preview on the right --- */
+.app-layout {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Container that centers the page within the available space */
+.planche-viewer {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  padding: 28px;
+  box-sizing: border-box;
+}
+
+/* The "plate" hugs the exact rendered size of the image: it's what the %-positioned
+   panels (from detectCase) use as their reference frame, not the container around it. */
+.plate {
+  position: relative;
+  line-height: 0;
+  font-size: 0;
+  box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.65);
+}
+
+.comic-image {
+  max-width: 100%;
+  max-height: 78vh;
+  display: block;
+  pointer-events: none;
+}
+
+.comic-panel {
+  position: absolute;
+  border: 2px solid var(--accent);
+  border-radius: 3px;
+  box-sizing: border-box;
+  background: rgba(242, 163, 63, 0.12);
+}
+
+.panel-number {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background-color: var(--accent);
+  color: var(--accent-ink);
+  font-family: "Fragment Mono", ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 3px;
+}
+
+/* --- SIDEBAR: webtoon preview --- */
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--line);
+  background: var(--surface);
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.sidebar-title {
+  font-family: "Fragment Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+.sidebar-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin: -8px 0 0;
+  line-height: 1.5;
+}
+
+/* Phone-screen-shaped frame: the preview should read as "what this will look like while
+   scrolling on mobile", not as a plain list of thumbnails (see .strip below). */
+.phone {
+  position: relative;
+  height: 500px;
+  background: #fdfbf6;
+  border: 6px solid var(--surface-2);
+  border-radius: 22px;
+  overflow: hidden;
+
+  box-shadow:
+    0 24px 44px -24px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.phone-notch {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-2);
+  z-index: 3;
+}
+
+/* The actually-scrollable content of the phone screen (inset:0 = fills .phone).
+   overflow-y:auto lets it scroll when there are more panels than visible space; see
+   verifierDefilement() in App.jsx for the associated "↓ more" cue. */
+.strip {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 24px 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.panel-row {
+  position: relative;
+  line-height: 0;
+}
+.panel-row img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Panel number, shown as a badge on the thumbnail's corner rather than off to the side:
+   the preview should read first as the final webtoon, not as a list. */
+.panel-tag {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: rgba(20, 16, 10, 0.72);
+  color: var(--accent);
+  font-family: "Fragment Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  line-height: 1.4;
+}
+
+/* Reorder/delete a panel: shown as badges on the image, same as the number tag, for the
+   same reason — see .panel-tag above. */
+.panel-ctrl {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  display: flex;
+  gap: 3px;
+}
+.panel-ctrl .icon {
+  width: 17px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 16, 10, 0.72);
+  border: none;
+  border-radius: 3px;
+  font-size: 8px;
+  color: #e9e2d3;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.panel-ctrl .icon:hover {
+  background: rgba(20, 16, 10, 0.92);
+}
+.panel-ctrl .icon:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.panel-ctrl .icon.danger {
+  color: var(--danger);
+}
+
+/* Fade + "↓ more" cue at the bottom of the screen, shown only when panels remain below
+   the visible line (driven by apercuADefiler in App.jsx) — signals that there's more to
+   scroll through, like on an actual webtoon reader. */
+.phone-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70px;
+  background: linear-gradient(to bottom, rgba(253, 251, 246, 0), rgba(253, 251, 246, 0.97));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10px;
+  pointer-events: none;
+}
+
+.scroll-cue {
+  font-family: "Fragment Mono", ui-monospace, monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.export-btn {
+  font-family: "Fragment Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  border: none;
+  border-radius: 7px;
+  padding: 12px 0;
+  text-align: center;
+  cursor: pointer;
+}
+.export-btn:hover {
+  filter: brightness(1.08);
+}
